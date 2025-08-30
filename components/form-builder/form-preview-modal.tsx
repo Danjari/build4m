@@ -125,7 +125,7 @@ export function FormPreviewModal({ formData, onClose }: FormPreviewModalProps) {
             <div className="mt-8 pt-6 border-t border-gray-200">
               <button
                 type="submit"
-                className="w-full py-3 bg-gradient-to-r from-orange-500 to-blue-600 text-white rounded-lg font-medium hover:shadow-lg transition-all duration-300"
+                className="w-full py-3 bg-orange-600 text-white rounded-lg font-medium hover:shadow-lg transition-all duration-300"
               >
                 Submit Form
               </button>

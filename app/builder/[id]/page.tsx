@@ -164,7 +164,7 @@ export default function FormBuilderPage() {
             </button>
             <button
               onClick={handlePublishForm}
-              className="px-6 py-2 bg-gradient-to-r from-orange-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all duration-300"
+              className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-all duration-300"
             >
               {formData.published ? "Update" : "Publish"}
             </button>

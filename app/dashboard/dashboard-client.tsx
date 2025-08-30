@@ -138,12 +138,7 @@ export default function DashboardClient() {
               >
                 Create New Form
               </button>
-              <button
-                onClick={() => router.push("/")}
-                className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
-              >
-                Build4m Home
-              </button>
+             
             </div>
           </div>
         </div>

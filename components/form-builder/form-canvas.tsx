@@ -183,7 +183,7 @@ export function FormCanvas({
         {/* Submit Button Preview */}
         <div className="mt-8 pt-6 border-t border-gray-200">
           <button
-            className="w-full py-3 bg-gradient-to-r from-orange-500 to-blue-600 text-white rounded-lg font-medium"
+            className="w-full py-3 bg-orange-600 hover:bg-orange-700 transition-all duration-300 text-white rounded-lg font-medium"
             disabled
           >
             Submit Form

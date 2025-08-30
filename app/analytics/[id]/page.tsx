@@ -153,7 +153,7 @@ export default function AnalyticsPage() {
           <p className="text-gray-600 mb-4">The form you&apos;re looking for doesn&apos;t exist.</p>
           <button
             onClick={() => router.push("/dashboard")}
-            className="px-6 py-2 bg-gradient-to-r from-orange-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all duration-300"
+            className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
           >
             Back to Dashboard
           </button>
