@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  clerkId   String   @unique
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  forms Form[]
+
+  @@map("users")
+}
+
+model Form {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  description   String?
+  theme         String      @default("default") // default, modern, minimal
+  submitMessage String      @default("Thank you for your submission!")
+  redirectUrl   String?
+  published     Boolean     @default(false)
+  responseCount Int         @default(0)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relations
+  userId   String @db.ObjectId
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fields   FormField[]
+  responses FormResponse[]
+
+  @@map("forms")
+}
+
+model FormField {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  type        String // text, email, phone, number, textarea, select, radio, checkbox, date, file, rating
+  label       String
+  placeholder String?
+  required    Boolean @default(false)
+  options     String[] // For select, radio, checkbox fields
+  order       Int     @default(0)
+
+  // Relations
+  formId String @db.ObjectId
+  form   Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@map("form_fields")
+}
+
+model FormResponse {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  data        Json     // Store form response data as JSON
+  ipAddress   String?
+  userAgent   String?
+  submittedAt DateTime @default(now())
+
+  // Relations
+  formId String @db.ObjectId
+  form   Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@map("form_responses")
+}
