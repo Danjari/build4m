@@ -1,103 +1,261 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import type React from "react"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { AIFormGenerator } from "../services/ai-form-generator"
+import type { FormData } from "../types/form"
+
+export default function HomePage() {
+  const [prompt, setPrompt] = useState("")
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
+
+  const handleGenerateForm = async () => {
+    if (!prompt.trim()) return
+
+    setIsGenerating(true)
+    setError(null)
+
+    try {
+      const result = await AIFormGenerator.generateForm(prompt.trim())
+
+      if (result.success && result.form) {
+        // Store the generated form in localStorage for now
+        // In production, this would be saved to a database
+        const formData: FormData = result.form as FormData
+        localStorage.setItem("currentForm", JSON.stringify(formData))
+
+        // Navigate to form builder
+        router.push(`/builder/${formData.id}`)
+      } else {
+        setError(result.error || "Failed to generate form")
+      }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.")
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      handleGenerateForm()
+    }
+  }
+
+  const examplePrompts = [
+    "Create a contact form with name, email, phone, and message fields",
+    "Build a job application form with personal details, experience, and file upload",
+    "Make a customer feedback form with rating and comments",
+    "Design an event registration form with attendee information and preferences",
+  ]
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-white">
+      {/* Navigation */}
+      <nav className="relative z-10 px-6 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="text-2xl font-bold text-orange-600">Build4m</div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              Dashboard
+            </button>
+            <button className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors">
+              Get Started
+            </button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="relative px-6 py-20">
+        <div className="relative z-10 max-w-4xl mx-auto text-center">
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 text-balance">
+            Never build forms <span className="text-orange-600">ever again</span>
+          </h1>
+
+          <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto text-pretty">
+            Describe your form in natural language and watch AI build it instantly. Beautiful, responsive forms with
+            Google Sheets integration.
+          </p>
+
+          <div className="max-w-2xl mx-auto mb-16">
+            <div className="relative">
+              <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center text-white font-semibold">
+                    AI
+                  </div>
+                  <div className="flex-1">
+                    <textarea
+                      value={prompt}
+                      onChange={(e) => setPrompt(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="Describe your form... e.g., 'Create a contact form with name, email, phone, and message fields'"
+                      className="w-full h-24 bg-transparent border-none outline-none resize-none text-gray-800 placeholder-gray-500 text-lg"
+                      disabled={isGenerating}
+                    />
+
+                    {/* Error Display */}
+                    {error && (
+                      <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                        {error}
+                      </div>
+                    )}
+
+                    <div className="flex justify-between items-center mt-4">
+                      <div className="text-sm text-gray-500">
+                        {isGenerating ? (
+                          <span className="flex items-center gap-2">
+                            <div className="w-3 h-3 border-2 border-orange-300 border-t-orange-600 rounded-full animate-spin"></div>
+                            Generating your form...
+                          </span>
+                        ) : (
+                          "Press Enter or click Generate"
+                        )}
+                      </div>
+                      <button
+                        onClick={handleGenerateForm}
+                        disabled={!prompt.trim() || isGenerating}
+                        className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isGenerating ? (
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            Generating...
+                          </div>
+                        ) : (
+                          "Generate Form"
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <p className="text-sm text-gray-500 mb-4 text-center">Try these examples:</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {examplePrompts.map((example, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setPrompt(example)}
+                    disabled={isGenerating}
+                    className="p-3 text-left text-sm bg-white hover:bg-gray-50 border border-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    "{example}"
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="relative px-6 py-20 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Everything you need to collect data</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              From AI generation to analytics, Build4m handles every aspect of form creation and management.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Feature 1: AI Form Builder */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-orange-600 rounded-lg mb-6"></div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">AI Form Builder</h3>
+              <p className="text-gray-600 mb-6">
+                Describe your form in plain English and watch our AI create it instantly. No technical knowledge
+                required.
+              </p>
+              <ul className="space-y-2 text-gray-600">
+                <li>• Natural language processing</li>
+                <li>• 11 different field types</li>
+                <li>• Smart validation rules</li>
+                <li>• Instant form generation</li>
+              </ul>
+            </div>
+
+            {/* Feature 2: Live Analytics */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-blue-600 rounded-lg mb-6"></div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Live Analytics</h3>
+              <p className="text-gray-600 mb-6">
+                Track responses in real-time with detailed analytics and insights. Export data to Google Sheets
+                automatically.
+              </p>
+              <ul className="space-y-2 text-gray-600">
+                <li>• Real-time response tracking</li>
+                <li>• Google Sheets integration</li>
+                <li>• Completion rate analysis</li>
+                <li>• CSV export options</li>
+              </ul>
+            </div>
+
+            {/* Feature 3: Easy Sharing */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-green-600 rounded-lg mb-6"></div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Easy Sharing</h3>
+              <p className="text-gray-600 mb-6">
+                Share your forms instantly with shareable links. Mobile-responsive design works everywhere.
+              </p>
+              <ul className="space-y-2 text-gray-600">
+                <li>• One-click publishing</li>
+                <li>• Shareable links</li>
+                <li>• Mobile-responsive design</li>
+                <li>• Custom success messages</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="relative px-6 py-20">
+        <div className="relative z-10 max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Ready to build your first form?</h2>
+          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            Join thousands of users who have simplified their form creation process with AI.
+          </p>
+          <button className="px-8 py-4 bg-orange-600 text-white text-lg font-semibold rounded-xl hover:bg-orange-700 transition-colors">
+            Start Building Forms
+          </button>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white px-6 py-12">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="text-2xl font-bold text-orange-400 mb-4 md:mb-0">Build4m</div>
+            <div className="flex gap-8 text-gray-400">
+              <a href="#" className="hover:text-white transition-colors">
+                Privacy
+              </a>
+              <a href="#" className="hover:text-white transition-colors">
+                Terms
+              </a>
+              <a href="#" className="hover:text-white transition-colors">
+                Support
+              </a>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+            <p>&copy; 2024 Build4m. Never build forms ever again.</p>
+          </div>
+        </div>
       </footer>
     </div>
-  );
+  )
 }
