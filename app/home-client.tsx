@@ -223,7 +223,10 @@ export default function HomePageClient() {
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             Join thousands of users who have simplified their form creation process with AI.
           </p>
-          <button className="px-8 py-4 bg-orange-600 text-white text-lg font-semibold rounded-xl hover:bg-orange-700 transition-colors">
+          <button 
+            onClick={() => router.push("/chat")}
+            className="px-8 py-4 bg-orange-600 text-white text-lg font-semibold rounded-xl hover:bg-orange-700 transition-colors"
+          >
             Start Building Forms
           </button>
         </div>
