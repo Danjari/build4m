@@ -54,7 +54,7 @@ export default function RootLayout({
                   </SignUpButton>
                 </SignedOut>
                 <SignedIn>
-                  <UserButton />
+                  <UserButton showName={true} />
                 </SignedIn>
               </div>
             </div>
