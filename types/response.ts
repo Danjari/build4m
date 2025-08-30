@@ -1,7 +1,7 @@
 export interface FormResponse {
     id: string
     formId: string
-    data: Record<string, any>
+    data: Record<string, string | number | boolean | string[]>
     submittedAt: Date
     ipAddress?: string
     userAgent?: string

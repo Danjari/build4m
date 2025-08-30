@@ -4,20 +4,19 @@ import type { FormResponse } from "../types/response"
 export class ExportService {
   static async exportToCSV(formData: FormData, responses: FormResponse[]): Promise<void> {
     // Create CSV headers
-    const headers = ["Response ID", "Submitted At", "IP Address", ...formData.fields.map((field) => field.label)]
+    const headers = ["Response ID", "Submitted At", ...formData.fields.map((field) => field.label)]
 
     // Create CSV rows
     const rows = responses.map((response) => [
       response.id,
       response.submittedAt.toISOString(),
-      response.ipAddress || "",
       ...formData.fields.map((field) => {
         const value = response.data[field.id]
         if (Array.isArray(value)) {
           return value.join("; ")
         }
-        if (typeof value === "object" && value?.name) {
-          return value.name
+        if (typeof value === "object" && value && 'name' in value) {
+          return (value as { name: string }).name
         }
         return String(value || "")
       }),

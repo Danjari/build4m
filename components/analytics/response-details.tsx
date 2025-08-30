@@ -23,12 +23,12 @@ export function ResponseDetailModal({ response, formData, onClose, onDelete }: R
     }).format(date)
   }
 
-  const formatValue = (value: any) => {
+  const formatValue = (value: unknown) => {
     if (Array.isArray(value)) {
       return value.join(", ")
     }
-    if (typeof value === "object" && value?.name) {
-      return `File: ${value.name}`
+    if (typeof value === "object" && value && 'name' in value) {
+      return `File: ${(value as { name: string }).name}`
     }
     return String(value || "No response")
   }

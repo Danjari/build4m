@@ -1,6 +1,6 @@
 "use client"
 
-import type { FormData } from "../../types/form"
+import type { FormData, FormField } from "../../types/form"
 
 interface FormPreviewModalProps {
   formData: FormData
@@ -8,7 +8,7 @@ interface FormPreviewModalProps {
 }
 
 export function FormPreviewModal({ formData, onClose }: FormPreviewModalProps) {
-  const renderField = (field: any) => {
+  const renderField = (field: FormField) => {
     const baseClasses =
       "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
 

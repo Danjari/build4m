@@ -6,7 +6,7 @@ export class FormSubmissionService {
     return Math.random().toString(36).substr(2, 9)
   }
 
-  static async submitForm(formData: FormData, responseData: Record<string, any>): Promise<SubmissionResult> {
+  static async submitForm(formData: FormData, responseData: Record<string, string | number | boolean | string[]>): Promise<SubmissionResult> {
     try {
       // Simulate submission delay
       await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 1000))
@@ -59,7 +59,7 @@ export class FormSubmissionService {
       const responses = localStorage.getItem(`responses_${formId}`)
       if (!responses) return []
 
-      return JSON.parse(responses).map((r: any) => ({
+      return JSON.parse(responses).map((r: FormResponse) => ({
         ...r,
         submittedAt: new Date(r.submittedAt),
       }))
@@ -80,7 +80,7 @@ export class FormSubmissionService {
     await new Promise((resolve) => setTimeout(resolve, 500))
   }
 
-  static validateField(field: FormField, value: any): string | null {
+  static validateField(field: FormField, value: string | number | boolean | string[] | undefined): string | null {
     // Required field validation
     if (field.required && (!value || (typeof value === "string" && !value.trim()))) {
       return `${field.label} is required`
@@ -89,13 +89,13 @@ export class FormSubmissionService {
     // Type-specific validation
     switch (field.type) {
       case "email":
-        if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        if (typeof value === "string" && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
           return "Please enter a valid email address"
         }
         break
 
       case "phone":
-        if (value && !/^[+]?[1-9][\d]{0,15}$/.test(value.replace(/[\s\-$$$$]/g, ""))) {
+        if (typeof value === "string" && value && !/^[+]?[1-9][\d]{0,15}$/.test(value.replace(/[\s\-$$$$]/g, ""))) {
           return "Please enter a valid phone number"
         }
         break
@@ -107,7 +107,7 @@ export class FormSubmissionService {
         break
 
       case "date":
-        if (value && isNaN(Date.parse(value))) {
+        if (typeof value === "string" && value && isNaN(Date.parse(value))) {
           return "Please enter a valid date"
         }
         break

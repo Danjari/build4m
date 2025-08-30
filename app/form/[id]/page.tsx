@@ -11,6 +11,7 @@ import Link from "next/link"
 export default function FormViewPage() {
   const params = useParams()
   const [formData, setFormData] = useState<FormData | null>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [responseData, setResponseData] = useState<Record<string, any>>({})
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -46,6 +47,7 @@ export default function FormViewPage() {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleFieldChange = (fieldId: string, value: any) => {
     setResponseData((prev) => ({ ...prev, [fieldId]: value }))
 
