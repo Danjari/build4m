@@ -82,7 +82,8 @@ export default function HomePage() {
           <Image 
             src="/bg.png" 
             alt="Background" 
-            fill
+            width={1920}
+            height={1080}
             className="object-cover opacity-10"
             priority
           />
