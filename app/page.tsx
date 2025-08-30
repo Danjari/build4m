@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import Image from "next/image"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -76,6 +77,16 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section className="relative px-6 py-20">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <Image 
+            src="/bg.png" 
+            alt="Background" 
+            fill
+            className="object-cover opacity-10"
+            priority
+          />
+        </div>
         <div className="relative z-10 max-w-4xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 text-balance">
             Never build forms <span className="text-orange-600">ever again</span>
