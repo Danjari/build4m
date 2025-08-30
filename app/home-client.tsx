@@ -5,13 +5,13 @@ import Image from "next/image"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { AIFormGenerator } from "../services/aiFormgenerator"
-import type { FormData } from "../types/form"
+import type { FormData, AIFormMetadata } from "../types/form"
 
 export default function HomePageClient() {
   const [prompt, setPrompt] = useState("")
   const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [metadata, setMetadata] = useState<AIFormMetadata | null>(null)
   const router = useRouter()
 
   const handleGenerateForm = async () => {
@@ -19,23 +19,45 @@ export default function HomePageClient() {
 
     setIsGenerating(true)
     setError(null)
+    setMetadata(null)
 
     try {
-      const result = await AIFormGenerator.generateForm(prompt.trim())
+      const response = await fetch("/api/forms/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt: prompt.trim() }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        if (response.status === 401 && result.redirectTo) {
+          // User needs to sign in - redirect them
+          window.location.href = result.redirectTo
+          return
+        }
+        throw new Error(result.error || "Failed to generate form")
+      }
 
       if (result.success && result.form) {
-        // Store the generated form in localStorage for now
-        // In production, this would be saved to a database
-        const formData: FormData = result.form as FormData
-        localStorage.setItem("currentForm", JSON.stringify(formData))
+        // Store the generated form in localStorage for the builder
+        localStorage.setItem("currentForm", JSON.stringify(result.form))
+        
+        // Store metadata for potential use in the builder
+        if (result.metadata) {
+          setMetadata(result.metadata)
+          localStorage.setItem("formMetadata", JSON.stringify(result.metadata))
+        }
 
         // Navigate to form builder
-        router.push(`/builder/${formData.id}`)
+        router.push(`/builder/${result.form.id}`)
       } else {
         setError(result.error || "Failed to generate form")
       }
     } catch (err) {
-      setError("An unexpected error occurred. Please try again.")
+      setError(err instanceof Error ? err.message : "An unexpected error occurred. Please try again.")
     } finally {
       setIsGenerating(false)
     }
@@ -102,6 +124,25 @@ export default function HomePageClient() {
                     {error && (
                       <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                         {error}
+                      </div>
+                    )}
+
+                    {/* AI Insights Display */}
+                    {metadata && (
+                      <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
+                            <span className="text-white text-xs">AI</span>
+                          </div>
+                          <span className="text-blue-800 font-medium text-sm">AI Insights</span>
+                        </div>
+                        <div className="text-blue-700 text-sm space-y-1">
+                          <p>Estimated completion: {metadata.estimatedCompletionTime}</p>
+                          <p>Complexity: {metadata.complexity}</p>
+                          {metadata.suggestions.length > 0 && (
+                            <p>{metadata.suggestions.length} improvement suggestions available</p>
+                          )}
+                        </div>
                       </div>
                     )}
 

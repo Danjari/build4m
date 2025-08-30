@@ -31,10 +31,24 @@ export interface FormField {
     published: boolean
     responses: number
   }
+
+  export interface AISuggestion {
+    type: "add_field" | "modify_field" | "reorder_fields" | "improve_label" | "add_validation"
+    fieldId?: string
+    description: string
+    priority: "high" | "medium" | "low"
+  }
+
+  export interface AIFormMetadata {
+    estimatedCompletionTime: string
+    complexity: "simple" | "moderate" | "complex"
+    suggestions: AISuggestion[]
+  }
   
   export interface AIGenerationResponse {
     success: boolean
     form?: Partial<FormData>
     error?: string
+    metadata?: AIFormMetadata
   }
   

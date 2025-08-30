@@ -3,12 +3,13 @@ import { getFormById } from '@/lib/db/forms'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const result = await getFormById(params.id)
+    const { id } = await context.params
+    const result = await getFormById(id)
 
-    if (!result.success) {
+    if (!result.success || !result.form) {
       return NextResponse.json({ error: result.error }, { status: 404 })
     }
 

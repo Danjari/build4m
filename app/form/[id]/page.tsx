@@ -28,15 +28,12 @@ export default function FormViewPage() {
       const savedForm = localStorage.getItem(`form_${params.id}`)
       if (savedForm) {
         const form = JSON.parse(savedForm)
-        if (form.published) {
-          setFormData({
-            ...form,
-            createdAt: new Date(form.createdAt),
-            updatedAt: new Date(form.updatedAt),
-          })
-        } else {
-          setSubmitError("This form is not published yet.")
-        }
+        // Show the form if it exists, regardless of published status
+        setFormData({
+          ...form,
+          createdAt: new Date(form.createdAt),
+          updatedAt: new Date(form.updatedAt),
+        })
       } else {
         setSubmitError("Form not found.")
       }

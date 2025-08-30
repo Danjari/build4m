@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import type { FormData, FormField } from "../../../types/form"
+import type { FormData, FormField, AIFormMetadata } from "../../../types/form"
 import { FieldPalette } from "../../../components/form-builder/field-pallete"
 import { FormCanvas } from "../../../components/form-builder/form-canvas"
 import { FieldPropertiesPanel } from "../../../components/form-builder/field-propriety-panel"
 import { FormPreviewModal } from "../../../components/form-builder/form-preview-modal"
+import { AISuggestionsPanel } from "../../../components/form-builder/ai-suggestions-panel"
 
 export default function FormBuilderPage() {
   const params = useParams()
@@ -15,15 +16,23 @@ export default function FormBuilderPage() {
   const [selectedField, setSelectedField] = useState<FormField | null>(null)
   const [showPreview, setShowPreview] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [metadata, setMetadata] = useState<AIFormMetadata | null>(null)
+  const [activePanel, setActivePanel] = useState<"properties" | "ai">("properties")
 
   useEffect(() => {
     // Load form data from localStorage (in production, this would be from API)
     const savedForm = localStorage.getItem("currentForm")
+    const savedMetadata = localStorage.getItem("formMetadata")
+    
     if (savedForm) {
       setFormData(JSON.parse(savedForm))
     } else {
       // Redirect back to home if no form data
       router.push("/")
+    }
+
+    if (savedMetadata) {
+      setMetadata(JSON.parse(savedMetadata))
     }
   }, [params.id, router])
 
@@ -144,6 +153,7 @@ export default function FormBuilderPage() {
               <h1 className="text-xl font-semibold text-gray-900">{formData.title}</h1>
               <p className="text-sm text-gray-500">
                 {formData.published ? "Published" : "Draft"} • {formData.fields.length} fields
+                {metadata && ` • ${metadata.complexity} complexity`}
               </p>
             </div>
           </div>
@@ -190,14 +200,47 @@ export default function FormBuilderPage() {
           />
         </div>
 
-        {/* Field Properties Panel */}
+        {/* Right Panel - Properties or AI Suggestions */}
         <div className="w-80 bg-white border-l border-gray-200 overflow-y-auto">
-          <FieldPropertiesPanel
-            selectedField={selectedField}
-            onUpdateField={handleUpdateField}
-            formData={formData}
-            onUpdateForm={setFormData}
-          />
+          {/* Panel Toggle */}
+          <div className="flex border-b border-gray-200">
+            <button
+              onClick={() => setActivePanel("properties")}
+              className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+                activePanel === "properties"
+                  ? "text-blue-600 border-b-2 border-blue-600"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Properties
+            </button>
+            <button
+              onClick={() => setActivePanel("ai")}
+              className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+                activePanel === "ai"
+                  ? "text-blue-600 border-b-2 border-blue-600"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              AI Assistant
+            </button>
+          </div>
+
+          {/* Panel Content */}
+          {activePanel === "properties" ? (
+            <FieldPropertiesPanel
+              selectedField={selectedField}
+              onUpdateField={handleUpdateField}
+              formData={formData}
+              onUpdateForm={setFormData}
+            />
+          ) : (
+            <AISuggestionsPanel
+              formData={formData}
+              onUpdateForm={setFormData}
+              metadata={metadata}
+            />
+          )}
         </div>
       </div>
 
