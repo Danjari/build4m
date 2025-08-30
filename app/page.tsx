@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { AIFormGenerator } from "../services/ai-form-generator"
+import { AIFormGenerator } from "../services/aiFormgenerator"
 import type { FormData } from "../types/form"
 
 export default function HomePage() {
@@ -151,7 +151,7 @@ export default function HomePage() {
                     disabled={isGenerating}
                     className="p-3 text-left text-sm bg-white hover:bg-gray-50 border border-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    "{example}"
+                    &quot;{example}&quot;
                   </button>
                 ))}
               </div>
