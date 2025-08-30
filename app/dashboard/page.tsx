@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import type { FormData } from "../../types/form"
 import { DashboardStats } from "../../components/dashboard/dashboard-stats"
 import { FormGrid } from "../../components/dashboard/form-grid"
-import { SearchBar } from "../../components/dashboard/search-bar"
+import { SearchBar } from "../../components/search-bar"
 
 export default function DashboardPage() {
   const router = useRouter()
