@@ -4,11 +4,11 @@ import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import type { FormData } from "../../../types/form"
 import type { FormResponse } from "../../../types/response"
-import { FormSubmissionService } from "../../../services/form-submission"
-import { AnalyticsStats } from "../../../components/analytics/analytics-stats"
+import { FormSubmissionService } from "../../../services/form-submision"
+import { AnalyticsStats } from "../../../components/analytics/stats"
 import { ResponseList } from "../../../components/analytics/response-list"
-import { ResponseDetailModal } from "../../../components/analytics/response-detail-modal"
-import { ExportService } from "../../../services/export-service"
+import { ResponseDetailModal } from "../../../components/analytics/response-details"
+import { ExportService } from "../../../services/export-services"
 
 export default function AnalyticsPage() {
   const params = useParams()
@@ -150,7 +150,7 @@ export default function AnalyticsPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Form Not Found</h2>
-          <p className="text-gray-600 mb-4">The form you're looking for doesn't exist.</p>
+          <p className="text-gray-600 mb-4">The form you&apos;re looking for doesn&apos;t exist.</p>
           <button
             onClick={() => router.push("/dashboard")}
             className="px-6 py-2 bg-gradient-to-r from-orange-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all duration-300"
@@ -163,48 +163,50 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => router.push("/dashboard")}
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              ← Back to Dashboard
-            </button>
-            <div>
-              <h1 className="text-xl font-semibold text-gray-900">{formData.title} - Analytics</h1>
-              <p className="text-sm text-gray-500">Track responses and analyze form performance</p>
+    <div className="min-h-screen bg-white">
+      {/* Page Header */}
+      <div className="px-6 py-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                ← Back to Dashboard
+              </button>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">{formData.title} - Analytics</h1>
+                <p className="text-gray-600 mt-1">Track responses and analyze form performance</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => router.push(`/form/${formData.id}`)}
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                View Form
+              </button>
+              <button
+                onClick={() => router.push(`/builder/${formData.id}`)}
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                Edit Form
+              </button>
+              <button
+                onClick={handleExportCSV}
+                disabled={isExporting || responses.length === 0}
+                className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isExporting ? "Exporting..." : "Export CSV"}
+              </button>
             </div>
           </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => router.push(`/form/${formData.id}`)}
-              className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-            >
-              View Form
-            </button>
-            <button
-              onClick={() => router.push(`/builder/${formData.id}`)}
-              className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-            >
-              Edit Form
-            </button>
-            <button
-              onClick={handleExportCSV}
-              disabled={isExporting || responses.length === 0}
-              className="px-6 py-2 bg-gradient-to-r from-orange-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isExporting ? "Exporting..." : "Export CSV"}
-            </button>
-          </div>
         </div>
-      </header>
+      </div>
 
-      <div className="p-6">
+      <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Analytics Stats */}
         <AnalyticsStats stats={getAnalyticsStats()} />
 
